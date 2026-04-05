@@ -9,12 +9,11 @@ const Layout = ({ children }) => {
   const location = useLocation();
 
   const menuItems = [
-    { text: 'Dashboard', icon: <Dashboard />, path: '/' },
-    { text: 'Visitor Management', icon: <People />, path: '/visitors' },
-    { text: 'Scan QR', icon: <QrCodeScanner />, path: '/scan' },
-    { text: 'Generate QR', icon: <QrCode />, path: '/generate' },
-    { text: 'Self Check-in', icon: <TouchApp />, path: '/checkin' },
-    { text: 'Visitor Log', icon: <History />, path: '/log' },
+    { text: 'Dashboard', icon: <Dashboard />, path: '/admin' },
+    { text: 'Visitor Management', icon: <People />, path: '/admin/visitors' },
+    { text: 'Scan QR', icon: <QrCodeScanner />, path: '/admin/scan' },
+    { text: 'Generate QR', icon: <QrCode />, path: '/admin/generate' },
+    { text: 'Visitor Log', icon: <History />, path: '/admin/log' },
   ];
 
   return (

@@ -195,11 +195,12 @@ function App() {
       <Router>
         <Routes>
           {/* Public route for self check-in */}
+          <Route path="/" element={<SelfCheckin />} />
           <Route path="/checkin" element={<SelfCheckin />} />
 
           {/* Protected admin routes */}
           {isAuthenticated ? (
-            <Route path="/*" element={
+            <Route path="/admin/*" element={
               <Layout>
                 <Routes>
                   <Route path="/" element={<Dashboard />} />
@@ -211,7 +212,7 @@ function App() {
               </Layout>
             } />
           ) : (
-            <Route path="/*" element={<Login onLogin={setIsAuthenticated} />} />
+            <Route path="/admin/*" element={<Login onLogin={setIsAuthenticated} />} />
           )}
         </Routes>
       </Router>

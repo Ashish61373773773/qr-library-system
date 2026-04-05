@@ -1,27 +1,8 @@
 const express = require('express');
 const authRouter = require('./auth');
 const { verifyToken } = authRouter;
+const { visitors } = require('../data');
 const router = express.Router();
-
-// In-memory storage for visitors
-let visitors = [
-  {
-    _id: '1',
-    visitorId: 'VIS001',
-    name: 'John Doe',
-    email: 'john@example.com',
-    phone: '123-456-7890',
-    createdAt: new Date()
-  },
-  {
-    _id: '2',
-    visitorId: 'VIS002',
-    name: 'Jane Smith',
-    email: 'jane@example.com',
-    phone: '987-654-3210',
-    createdAt: new Date()
-  }
-];
 
 // Get all visitors
 router.get('/', verifyToken, async (req, res) => {

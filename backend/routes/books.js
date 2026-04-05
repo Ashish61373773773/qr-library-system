@@ -1,27 +1,8 @@
 const express = require('express');
 const authRouter = require('./auth');
 const { verifyToken } = authRouter;
+const { books } = require('../data');
 const router = express.Router();
-
-// In-memory storage for books
-let books = [
-  {
-    _id: '1',
-    title: 'The Great Gatsby',
-    author: 'F. Scott Fitzgerald',
-    isbn: '978-0-7432-7356-5',
-    available: true,
-    createdAt: new Date()
-  },
-  {
-    _id: '2',
-    title: 'To Kill a Mockingbird',
-    author: 'Harper Lee',
-    isbn: '978-0-06-112008-4',
-    available: true,
-    createdAt: new Date()
-  }
-];
 
 // Get all books
 router.get('/', verifyToken, async (req, res) => {

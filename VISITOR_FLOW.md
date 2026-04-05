@@ -21,8 +21,8 @@
 - No manual scanning required!
 
 ## URLs:
-- **Admin Panel:** `/` (requires login)
-- **Self Check-in:** `/checkin` (public, no login required)
+- **Admin Panel:** `/admin` (requires login)
+- **Self Check-in:** `/` or `/checkin` (public, no login required)
 
 ## Features:
 ✅ **Self-service** - Visitors check themselves in/out

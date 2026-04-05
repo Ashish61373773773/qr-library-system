@@ -1,28 +1,9 @@
 const express = require('express');
 const authRouter = require('./auth');
 const { verifyToken } = authRouter;
+const { checkins, visitors } = require('../data');
 const QRCode = require('qrcode');
 const router = express.Router();
-
-// In-memory storage for checkins
-let checkins = [
-  {
-    _id: '1',
-    visitorId: 'VIS001',
-    bookId: null,
-    checkinTime: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-    checkoutTime: null,
-    status: 'checked-in'
-  },
-  {
-    _id: '2',
-    visitorId: 'VIS002',
-    bookId: null,
-    checkinTime: new Date(Date.now() - 4 * 60 * 60 * 1000), // 4 hours ago
-    checkoutTime: new Date(Date.now() - 1 * 60 * 60 * 1000), // 1 hour ago
-    status: 'checked-out'
-  }
-];
 
 // Get all checkins
 router.get('/', verifyToken, async (req, res) => {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Box, Typography, Button, Alert, Card, CardContent, Chip, Stack } from '@mui/material';
-import { QrCodeScanner, CheckCircle, Error, CameraAlt } from '@mui/icons-material';
+import { QrCodeScanner, CheckCircle, ErrorOutline, CameraAlt } from '@mui/icons-material';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import axios from 'axios';
 

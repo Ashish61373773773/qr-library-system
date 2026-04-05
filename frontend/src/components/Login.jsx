@@ -1,21 +1,34 @@
 import React, { useState } from 'react';
 import { TextField, Button, Container, Typography, Box, Alert, Paper } from '@mui/material';
 import { LibraryBooks } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const Login = ({ onLogin }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('admin@library.com');
+  const [password, setPassword] = useState('admin123');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
+
     try {
+      console.log('Attempting login with:', { email, password: '***' });
       const res = await axios.post('/api/auth/login', { email, password });
+      console.log('Login response:', res.data);
+      
       localStorage.setItem('token', res.data.token);
       onLogin(true);
+      navigate('/admin');
     } catch (err) {
-      setError('Invalid credentials');
+      console.error('Login error:', err);
+      setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -134,6 +147,7 @@ const Login = ({ onLogin }) => {
               type="submit"
               fullWidth
               variant="contained"
+              disabled={loading}
               sx={{
                 mt: 3,
                 mb: 2,
@@ -146,9 +160,12 @@ const Login = ({ onLogin }) => {
                 '&:hover': {
                   background: 'linear-gradient(45deg, #1565c0 30%, #1976d2 90%)',
                 },
+                '&:disabled': {
+                  background: '#ccc',
+                },
               }}
             >
-              Sign In
+              {loading ? 'Signing In...' : 'Sign In'}
             </Button>
           </Box>
         </Paper>

@@ -2,9 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   Box, Typography, Button, Alert, Card, CardContent,
   Chip, Stack, Dialog, DialogTitle, DialogContent,
-  DialogActions, Avatar, CheckCircle, Error, QrCode, CameraAlt
+  DialogActions, Avatar
 } from '@mui/material';
+import { QrCode, CameraAlt, ErrorOutline, CheckCircle } from '@mui/icons-material';
 import { Html5QrcodeScanner, Html5Qrcode } from 'html5-qrcode';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 const SelfCheckin = () => {
@@ -384,6 +386,23 @@ const SelfCheckin = () => {
               </Stack>
             </CardContent>
           </Card>
+
+          {/* Admin Link */}
+          <Box sx={{ textAlign: 'center', mt: 3 }}>
+            <Typography variant="body2" color="text.secondary">
+              Library Staff?{' '}
+              <Link
+                to="/admin"
+                style={{
+                  color: '#1976d2',
+                  textDecoration: 'none',
+                  fontWeight: 'bold'
+                }}
+              >
+                Admin Login
+              </Link>
+            </Typography>
+          </Box>
         </CardContent>
       </Card>
 
@@ -402,7 +421,7 @@ const SelfCheckin = () => {
       >
         <DialogTitle sx={{ textAlign: 'center', pb: 1 }}>
           {error ? (
-            <Error sx={{ fontSize: 48, color: 'error.main', mb: 1 }} />
+            <ErrorOutline sx={{ fontSize: 48, color: 'error.main', mb: 1 }} />
           ) : (
             <CheckCircle sx={{ fontSize: 48, color: 'success.main', mb: 1 }} />
           )}
