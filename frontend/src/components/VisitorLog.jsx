@@ -41,7 +41,7 @@ const VisitorLog = () => {
         return;
       }
 
-      const res = await axios.get('http://localhost:5000/api/checkins', {
+      const res = await axios.get('/api/checkins', {
         headers: {
           Authorization: `Bearer ${token}`
         }
