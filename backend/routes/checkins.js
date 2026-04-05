@@ -34,14 +34,15 @@ router.get('/', verifyToken, async (req, res) => {
   }
 });
 
-// Scan QR - Check in or out
-router.post('/scan', verifyToken, async (req, res) => {
+// Scan QR - Check in or out (Public endpoint for self check-in)
+router.post('/scan', async (req, res) => {
   const { visitorId, bookId } = req.body;
 
   try {
     // Check if visitor exists (simplified check)
     const visitorExists = checkins.some(c => c.visitorId === visitorId) ||
-                         visitorId === 'VIS001' || visitorId === 'VIS002';
+                         visitorId === 'VIS001' || visitorId === 'VIS002' ||
+                         visitors.some(v => v.visitorId === visitorId);
 
     if (!visitorExists) return res.status(404).json({ message: 'Visitor not found' });
 

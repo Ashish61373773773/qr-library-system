@@ -47,10 +47,14 @@ router.post('/', verifyToken, async (req, res) => {
   }
 });
 
-// Get visitor by ID
-router.get('/:id', verifyToken, async (req, res) => {
+// Get visitor by ID (for self check-in - public)
+router.get('/:id', async (req, res) => {
   try {
-    const visitor = visitors.find(v => v._id === req.params.id);
+    // Try to find by _id first, then by visitorId
+    let visitor = visitors.find(v => v._id === req.params.id);
+    if (!visitor) {
+      visitor = visitors.find(v => v.visitorId === req.params.id);
+    }
     if (!visitor) return res.status(404).json({ message: 'Visitor not found' });
     res.json(visitor);
   } catch (err) {

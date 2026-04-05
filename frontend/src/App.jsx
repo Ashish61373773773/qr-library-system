@@ -9,6 +9,7 @@ import ScanQR from './components/ScanQR';
 import GenerateQR from './components/GenerateQR';
 import VisitorLog from './components/VisitorLog';
 import VisitorManagement from './components/VisitorManagement';
+import SelfCheckin from './components/SelfCheckin';
 
 const theme = createTheme({
   palette: {
@@ -192,19 +193,27 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
-        {isAuthenticated ? (
-          <Layout>
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/visitors" element={<VisitorManagement />} />
-              <Route path="/scan" element={<ScanQR />} />
-              <Route path="/generate" element={<GenerateQR />} />
-              <Route path="/log" element={<VisitorLog />} />
-            </Routes>
-          </Layout>
-        ) : (
-          <Login onLogin={setIsAuthenticated} />
-        )}
+        <Routes>
+          {/* Public route for self check-in */}
+          <Route path="/checkin" element={<SelfCheckin />} />
+
+          {/* Protected admin routes */}
+          {isAuthenticated ? (
+            <Route path="/*" element={
+              <Layout>
+                <Routes>
+                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/visitors" element={<VisitorManagement />} />
+                  <Route path="/scan" element={<ScanQR />} />
+                  <Route path="/generate" element={<GenerateQR />} />
+                  <Route path="/log" element={<VisitorLog />} />
+                </Routes>
+              </Layout>
+            } />
+          ) : (
+            <Route path="/*" element={<Login onLogin={setIsAuthenticated} />} />
+          )}
+        </Routes>
       </Router>
     </ThemeProvider>
   );

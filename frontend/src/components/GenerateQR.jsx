@@ -212,6 +212,15 @@ const GenerateQR = () => {
                   {bookId && <> | Book ID: <strong>{bookId}</strong></>}
                 </Typography>
 
+                <Alert severity="info" sx={{ mb: 3, borderRadius: 2 }}>
+                  <Typography variant="body2">
+                    <strong>Self Check-in URL:</strong> Visitors can scan their QR code at:<br/>
+                    <code style={{background: '#f5f5f5', padding: '2px 4px', borderRadius: '2px'}}>
+                      {window.location.origin}/checkin
+                    </code>
+                  </Typography>
+                </Alert>
+
                 <Button
                   variant="contained"
                   startIcon={<Download />}

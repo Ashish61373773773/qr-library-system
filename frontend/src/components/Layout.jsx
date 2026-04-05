@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, AppBar, Typography, Avatar } from '@mui/material';
-import { Dashboard, QrCodeScanner, QrCode, History, People, LibraryBooks } from '@mui/icons-material';
+import { Dashboard, QrCodeScanner, QrCode, History, People, LibraryBooks, TouchApp } from '@mui/icons-material';
 import { Link, useLocation } from 'react-router-dom';
 
 const drawerWidth = 280;
@@ -13,6 +13,7 @@ const Layout = ({ children }) => {
     { text: 'Visitor Management', icon: <People />, path: '/visitors' },
     { text: 'Scan QR', icon: <QrCodeScanner />, path: '/scan' },
     { text: 'Generate QR', icon: <QrCode />, path: '/generate' },
+    { text: 'Self Check-in', icon: <TouchApp />, path: '/checkin' },
     { text: 'Visitor Log', icon: <History />, path: '/log' },
   ];
 
