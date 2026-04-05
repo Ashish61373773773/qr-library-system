@@ -1,13 +1,31 @@
 const express = require('express');
-const Visitor = require('../models/Visitor');
 const authRouter = require('./auth');
 const { verifyToken } = authRouter;
 const router = express.Router();
 
+// In-memory storage for visitors
+let visitors = [
+  {
+    _id: '1',
+    visitorId: 'VIS001',
+    name: 'John Doe',
+    email: 'john@example.com',
+    phone: '123-456-7890',
+    createdAt: new Date()
+  },
+  {
+    _id: '2',
+    visitorId: 'VIS002',
+    name: 'Jane Smith',
+    email: 'jane@example.com',
+    phone: '987-654-3210',
+    createdAt: new Date()
+  }
+];
+
 // Get all visitors
 router.get('/', verifyToken, async (req, res) => {
   try {
-    const visitors = await Visitor.find();
     res.json(visitors);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -16,9 +34,13 @@ router.get('/', verifyToken, async (req, res) => {
 
 // Create visitor
 router.post('/', verifyToken, async (req, res) => {
-  const visitor = new Visitor(req.body);
   try {
-    const newVisitor = await visitor.save();
+    const newVisitor = {
+      _id: Date.now().toString(),
+      ...req.body,
+      createdAt: new Date()
+    };
+    visitors.push(newVisitor);
     res.status(201).json(newVisitor);
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -28,7 +50,7 @@ router.post('/', verifyToken, async (req, res) => {
 // Get visitor by ID
 router.get('/:id', verifyToken, async (req, res) => {
   try {
-    const visitor = await Visitor.findById(req.params.id);
+    const visitor = visitors.find(v => v._id === req.params.id);
     if (!visitor) return res.status(404).json({ message: 'Visitor not found' });
     res.json(visitor);
   } catch (err) {

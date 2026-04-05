@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Card, CardContent, Typography, Box } from '@mui/material';
+import { Grid, Card, CardContent, Typography, Box, Avatar } from '@mui/material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { People, AccessTime, TrendingUp, Schedule } from '@mui/icons-material';
 import axios from 'axios';
 
 const Dashboard = () => {
@@ -39,64 +40,133 @@ const Dashboard = () => {
     { hour: '17', visitors: 16 },
   ];
 
+  const statCards = [
+    {
+      title: 'Total Visits',
+      value: stats.totalVisits,
+      icon: <People />,
+      color: 'primary.main',
+      bgColor: 'primary.light',
+    },
+    {
+      title: 'Current Visitors',
+      value: stats.currentVisitors,
+      icon: <TrendingUp />,
+      color: 'secondary.main',
+      bgColor: 'secondary.light',
+    },
+    {
+      title: 'Average Duration',
+      value: `${stats.averageDuration} min`,
+      icon: <AccessTime />,
+      color: 'warning.main',
+      bgColor: 'warning.light',
+    },
+    {
+      title: 'Peak Hours',
+      value: '2-4 PM',
+      icon: <Schedule />,
+      color: 'info.main',
+      bgColor: 'info.light',
+    },
+  ];
+
   return (
     <Box>
-      <Typography variant="h4" gutterBottom>
-        Library Dashboard
-      </Typography>
-      <Typography variant="body1" color="text.secondary" gutterBottom>
-        Real-time overview of library activity and visitor statistics.
-      </Typography>
+      <Box sx={{
+        mb: 4,
+        p: 4,
+        borderRadius: 4,
+        background: 'linear-gradient(135deg, rgba(25, 118, 210, 0.1) 0%, rgba(56, 142, 60, 0.1) 100%)',
+        backdropFilter: 'blur(10px)',
+        border: '1px solid rgba(255, 255, 255, 0.2)',
+        position: 'relative',
+        overflow: 'hidden',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundImage: `
+            radial-gradient(circle at 30% 20%, rgba(25, 118, 210, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 70% 80%, rgba(56, 142, 60, 0.1) 0%, transparent 50%)
+          `,
+          pointerEvents: 'none',
+        },
+      }}>
+        <Typography variant="h4" gutterBottom sx={{
+          color: 'primary.main',
+          fontWeight: 'bold',
+          textAlign: 'center',
+          mb: 2,
+          position: 'relative',
+          zIndex: 1
+        }}>
+          📊 Library Dashboard
+        </Typography>
+        <Typography variant="body1" color="text.secondary" gutterBottom sx={{
+          textAlign: 'center',
+          position: 'relative',
+          zIndex: 1
+        }}>
+          Real-time overview of library activity and visitor statistics.
+        </Typography>
+      </Box>
 
       <Grid container spacing={3} sx={{ mt: 2 }}>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Total Visits
-              </Typography>
-              <Typography variant="h5">
-                {stats.totalVisits}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Current Visitors
-              </Typography>
-              <Typography variant="h5">
-                {stats.currentVisitors}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Average Duration
-              </Typography>
-              <Typography variant="h5">
-                {stats.averageDuration} min
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Peak Hours
-              </Typography>
-              <Typography variant="h5">
-                2-4 PM
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
+        {statCards.map((card, index) => (
+          <Grid item xs={12} sm={6} md={3} key={index}>
+            <Card sx={{
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              cursor: 'pointer',
+              position: 'relative',
+              overflow: 'hidden',
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: `linear-gradient(135deg, ${card.bgColor}20 0%, ${card.bgColor}10 100%)`,
+                opacity: 0,
+                transition: 'opacity 0.3s ease',
+                pointerEvents: 'none',
+              },
+              '&:hover': {
+                transform: 'translateY(-8px) scale(1.02)',
+                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.15)',
+                '&::before': {
+                  opacity: 1,
+                },
+              },
+            }}>
+              <CardContent sx={{ flexGrow: 1, textAlign: 'center' }}>
+                <Avatar sx={{
+                  mx: 'auto',
+                  mb: 2,
+                  bgcolor: card.bgColor,
+                  color: card.color,
+                  width: 56,
+                  height: 56
+                }}>
+                  {card.icon}
+                </Avatar>
+                <Typography color="textSecondary" gutterBottom variant="h6">
+                  {card.title}
+                </Typography>
+                <Typography variant="h4" sx={{ color: card.color, fontWeight: 'bold' }}>
+                  {card.value}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
       </Grid>
 
       <Grid container spacing={3} sx={{ mt: 2 }}>

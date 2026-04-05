@@ -4,9 +4,66 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="QR-based Library Check-in System - Modern library management with QR code technology" />
+    <meta name="theme-color" content="#1976d2" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <title>QR Library System</title>
   </head>
   <body>
+    <!-- Animated background elements -->
+    <div style="
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+      overflow: hidden;
+    ">
+      <div style="
+        position: absolute;
+        top: 10%;
+        left: 10%;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, rgba(25, 118, 210, 0.1) 0%, transparent 70%);
+        border-radius: 50%;
+        animation: float 8s ease-in-out infinite;
+      "></div>
+      <div style="
+        position: absolute;
+        top: 60%;
+        right: 15%;
+        width: 150px;
+        height: 150px;
+        background: radial-gradient(circle, rgba(56, 142, 60, 0.1) 0%, transparent 70%);
+        border-radius: 50%;
+        animation: float 6s ease-in-out infinite reverse;
+      "></div>
+      <div style="
+        position: absolute;
+        bottom: 20%;
+        left: 20%;
+        width: 100px;
+        height: 100px;
+        background: radial-gradient(circle, rgba(255, 119, 198, 0.08) 0%, transparent 70%);
+        border-radius: 50%;
+        animation: float 10s ease-in-out infinite;
+      "></div>
+      <div style="
+        position: absolute;
+        top: 30%;
+        right: 30%;
+        width: 80px;
+        height: 80px;
+        background: radial-gradient(circle, rgba(255, 193, 7, 0.1) 0%, transparent 70%);
+        border-radius: 50%;
+        animation: float 7s ease-in-out infinite reverse;
+      "></div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
