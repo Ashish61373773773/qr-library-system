@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   Box, Typography, Button, Alert, Card, CardContent,
   Chip, Stack, Dialog, DialogTitle, DialogContent,
-  DialogActions, Avatar, CheckCircle, Error, QrCode
+  DialogActions, Avatar, CheckCircle, Error, QrCode, CameraAlt
 } from '@mui/material';
-import { Html5QrcodeScanner } from 'html5-qrcode';
+import { Html5QrcodeScanner, Html5Qrcode } from 'html5-qrcode';
 import axios from 'axios';
 
 const SelfCheckin = () => {
@@ -14,26 +14,151 @@ const SelfCheckin = () => {
   const [error, setError] = useState('');
   const [scanning, setScanning] = useState(false);
   const [showResult, setShowResult] = useState(false);
+  const [cameraSupported, setCameraSupported] = useState(null);
   const scannerRef = useRef(null);
+  const html5QrCodeRef = useRef(null);
+
+  // Check camera support on component mount
+  useEffect(() => {
+    checkCameraSupport();
+  }, []);
+
+  const checkCameraSupport = async () => {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = devices.filter(device => device.kind === 'videoinput');
+      setCameraSupported(videoDevices.length > 0);
+      console.log('Camera devices found:', videoDevices.length);
+    } catch (err) {
+      console.error('Error checking camera support:', err);
+      setCameraSupported(false);
+    }
+  };
+
+  const requestCameraPermission = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      stream.getTracks().forEach(track => track.stop()); // Stop the stream immediately
+      setCameraSupported(true);
+      console.log('Camera permission granted');
+    } catch (err) {
+      console.error('Camera permission denied:', err);
+      setError('Camera permission denied. Please allow camera access and refresh the page.');
+      setCameraSupported(false);
+    }
+  };
 
   useEffect(() => {
     if (scanning) {
-      scannerRef.current = new Html5QrcodeScanner(
-        'qr-reader',
-        { fps: 10, qrbox: { width: 300, height: 300 } },
-        false
-      );
-      scannerRef.current.render(onScanSuccess, onScanError);
-    } else if (scannerRef.current) {
-      scannerRef.current.clear();
+      startScanner();
+    } else {
+      stopScanner();
     }
 
     return () => {
-      if (scannerRef.current) {
-        scannerRef.current.clear();
-      }
+      stopScanner();
     };
   }, [scanning]);
+
+  const startScanner = async () => {
+    try {
+      console.log('Starting QR scanner...');
+
+      // First try to get camera permission
+      await requestCameraPermission();
+
+      // Clear any existing scanner
+      if (scannerRef.current) {
+        await scannerRef.current.clear().catch(() => {});
+      }
+
+      // Create new scanner
+      scannerRef.current = new Html5QrcodeScanner(
+        'qr-reader',
+        {
+          fps: 10,
+          qrbox: { width: 300, height: 300 },
+          aspectRatio: 1.0,
+          showTorchButtonIfSupported: true,
+          showZoomSliderIfSupported: true,
+          supportedScanTypes: [Html5QrcodeSupportedFormats.QR_CODE]
+        },
+        false
+      );
+
+      await scannerRef.current.render(onScanSuccess, onScanError);
+      console.log('QR scanner started successfully');
+
+    } catch (err) {
+      console.error('Failed to start QR scanner:', err);
+      console.log('Trying alternative scanner...');
+
+      // Try alternative scanner
+      try {
+        await startAlternativeScanner();
+      } catch (altErr) {
+        console.error('Alternative scanner also failed:', altErr);
+        setError(`Failed to start camera: ${err.message}. Please check camera permissions and try refreshing the page.`);
+        setScanning(false);
+      }
+    }
+  };
+
+  const startAlternativeScanner = async () => {
+    try {
+      console.log('Starting alternative QR scanner...');
+
+      if (html5QrCodeRef.current) {
+        html5QrCodeRef.current.stop();
+      }
+
+      html5QrCodeRef.current = new Html5Qrcode('qr-reader');
+
+      const config = {
+        fps: 10,
+        qrbox: { width: 300, height: 300 },
+        aspectRatio: 1.0
+      };
+
+      await html5QrCodeRef.current.start(
+        { facingMode: 'environment' }, // Use back camera
+        config,
+        onScanSuccess,
+        onScanError
+      );
+
+      console.log('Alternative QR scanner started');
+    } catch (err) {
+      console.error('Alternative scanner failed:', err);
+      setError('Failed to start alternative scanner. Please check camera permissions.');
+    }
+  };
+
+  const stopAlternativeScanner = async () => {
+    if (html5QrCodeRef.current) {
+      try {
+        await html5QrCodeRef.current.stop();
+        html5QrCodeRef.current = null;
+      } catch (err) {
+        console.error('Error stopping alternative scanner:', err);
+      }
+    }
+  };
+
+  const stopScanner = async () => {
+    // Stop main scanner
+    if (scannerRef.current) {
+      try {
+        await scannerRef.current.clear();
+        console.log('QR scanner stopped');
+      } catch (err) {
+        console.error('Error stopping scanner:', err);
+      }
+    }
+
+    // Stop alternative scanner
+    await stopAlternativeScanner();
+  };
 
   const onScanSuccess = async (decodedText) => {
     setScanning(false);
@@ -141,14 +266,50 @@ const SelfCheckin = () => {
             </Typography>
           </Box>
 
+          {/* Camera Status */}
+          {cameraSupported === false && (
+            <Alert severity="warning" sx={{ mb: 3, borderRadius: 2 }}>
+              <Typography variant="body2">
+                <strong>Camera not detected!</strong> Please ensure you have a camera connected and refresh the page.
+              </Typography>
+            </Alert>
+          )}
+
+          {error && (
+            <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
+              {error}
+            </Alert>
+          )}
+
           {/* Scanner Area */}
           <Box sx={{ mb: 4 }}>
             {!scanning ? (
               <Box sx={{ textAlign: 'center' }}>
+                {cameraSupported === null ? (
+                  <Button
+                    variant="outlined"
+                    onClick={checkCameraSupport}
+                    sx={{ mb: 2, borderRadius: 2 }}
+                    startIcon={<CameraAlt />}
+                  >
+                    Check Camera Access
+                  </Button>
+                ) : cameraSupported === false ? (
+                  <Button
+                    variant="outlined"
+                    onClick={requestCameraPermission}
+                    sx={{ mb: 2, borderRadius: 2 }}
+                    startIcon={<CameraAlt />}
+                  >
+                    Request Camera Permission
+                  </Button>
+                ) : null}
+
                 <Button
                   variant="contained"
                   size="large"
                   onClick={startScanning}
+                  disabled={cameraSupported === false}
                   sx={{
                     py: 2,
                     px: 4,
@@ -160,6 +321,10 @@ const SelfCheckin = () => {
                       background: 'linear-gradient(45deg, #1565c0, #1976d2)',
                       boxShadow: '0 6px 20px rgba(25, 118, 210, 0.4)',
                       transform: 'translateY(-2px)'
+                    },
+                    '&:disabled': {
+                      background: '#ccc',
+                      color: '#666'
                     },
                     transition: 'all 0.3s ease'
                   }}
@@ -179,7 +344,12 @@ const SelfCheckin = () => {
                     overflow: 'hidden',
                     boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
                     maxWidth: 400,
-                    mx: 'auto'
+                    mx: 'auto',
+                    minHeight: 300,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: '#f5f5f5'
                   }}
                 />
                 <Box sx={{ textAlign: 'center', mt: 2 }}>
